@@ -73,16 +73,16 @@ export function CheckInButton({ variant = 'default' }: CheckInButtonProps) {
 
   if (!isConnected) {
     return (
-      <div className="flex gap-2">
+      <div className="flex flex-wrap justify-center gap-3 w-full">
         {connectors.map((connector) => (
           <button
             key={connector.uid}
             onClick={() => connect({ connector })}
             disabled={isConnecting}
-            className="flex items-center gap-2 bg-base-blue text-white px-6 py-2 rounded-full font-bold hover:opacity-90 transition-all disabled:opacity-50 text-sm"
+            className="flex items-center gap-2 bg-base-blue text-white px-5 py-2.5 rounded-full font-bold hover:opacity-90 transition-all disabled:opacity-50 text-sm shadow-md"
           >
             {isConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wallet className="w-4 h-4" />}
-            Connect {connector.name}
+            {connector.name}
           </button>
         ))}
       </div>
