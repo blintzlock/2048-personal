@@ -7,12 +7,25 @@ import { useAccount, useConnect, useDisconnect, useSendTransaction, useSwitchCha
 import { base } from 'wagmi/chains';
 import { Loader2, Wallet, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
-import { parseEther, hexToBytes, stringToHex } from 'viem';
+import { encodeFunctionData, stringToHex } from 'viem';
 
-// This is a placeholder for a Builder Code.
-// In a real app, this would be a specific code generated for the developer.
-const BUILDER_CODE = 'BASE2048'; // Example string
-const BUILDER_CODE_HEX = stringToHex(BUILDER_CODE);
+// Deployed contract address on Base
+const CONTRACT_ADDRESS = '0xd9D09953a6270F989Aad0AD24Ed09Def1aFF73aD';
+
+// The full builder code for display or string-based function calls if needed
+const FULL_BUILDER_CODE = 'bc_xatr391l';
+// The 8-character unique identifier part of the builder code
+const BUILDER_ID = 'xatr391l';
+
+const ABI = [
+  {
+    inputs: [{ internalType: 'string', name: 'builderCode', type: 'string' }],
+    name: 'checkIn',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+] as const;
 
 interface CheckInButtonProps {
   variant?: 'default' | 'minimal';
@@ -34,10 +47,24 @@ export function CheckInButton({ variant = 'default' }: CheckInButtonProps) {
     }
 
     try {
+      // 1. Encode the function call data
+      const baseCallData = encodeFunctionData({
+        abi: ABI,
+        functionName: 'checkIn',
+        args: [FULL_BUILDER_CODE],
+      });
+
+      // 2. Convert the 8-character builder ID to hex
+      // Note: slice(2) to remove '0x' prefix from the hex string
+      const builderHexSuffix = stringToHex(BUILDER_ID).slice(2);
+
+      // 3. Append the builder code hex suffix to the calldata as required by Base docs
+      const finalData = `${baseCallData}${builderHexSuffix}` as `0x${string}`;
+
+      // 4. Send the transaction with the augmented data
       sendTransaction({
-        to: address,
-        value: parseEther('0'),
-        data: BUILDER_CODE_HEX as `0x${string}`,
+        to: CONTRACT_ADDRESS as `0x${string}`,
+        data: finalData,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Transaction failed');
