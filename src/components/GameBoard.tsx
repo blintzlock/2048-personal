@@ -13,18 +13,16 @@ interface GameBoardProps {
 
 export function GameBoard({ grid }: GameBoardProps) {
   return (
-    <div className="relative aspect-square w-full max-w-[500px] bg-container-bg p-2 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5">
-      {/* Background cells */}
-      <div className="absolute inset-0 p-2 grid grid-cols-4 grid-rows-4 gap-0">
+    <div className="relative w-full aspect-square bg-container-bg p-3 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 overflow-hidden">
+      {/* Background cells - fixed grid */}
+      <div className="grid grid-cols-4 grid-rows-4 gap-3 w-full h-full">
         {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, i) => (
-          <div key={i} className="p-2 w-full h-full">
-            <div className="bg-tile-empty w-full h-full rounded-lg" />
-          </div>
+          <div key={i} className="bg-tile-empty rounded-lg w-full h-full" />
         ))}
       </div>
 
-      {/* Active tiles */}
-      <div className="absolute inset-0 p-2">
+      {/* Active tiles - absolutely positioned over the grid */}
+      <div className="absolute inset-3 pointer-events-none">
         <AnimatePresence>
           {grid.map((row, r) =>
             row.map((tile, c) => tile !== null && (
