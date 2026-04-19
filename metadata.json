@@ -1,0 +1,6 @@
+{
+  "name": "Base 2048",
+  "description": "A polished 2048 game built on the Base network with on-chain check-ins and builder rewards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
