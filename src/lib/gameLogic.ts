@@ -3,9 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type Grid = (number | null)[][];
+export type TileObject = {
+  id: number;
+  value: number;
+};
+
+export type Grid = (TileObject | null)[][];
 
 export const GRID_SIZE = 4;
+let tileIdCounter = 0;
 
 export function createEmptyGrid(): Grid {
   return Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
@@ -27,7 +33,10 @@ export function addRandomTile(grid: Grid): Grid {
   const newGrid = grid.map(row => [...row]);
   const pos = getRandomPosition(newGrid);
   if (pos) {
-    newGrid[pos.r][pos.c] = Math.random() < 0.9 ? 2 : 4;
+    newGrid[pos.r][pos.c] = {
+      id: tileIdCounter++,
+      value: Math.random() < 0.9 ? 2 : 4
+    };
   }
   return newGrid;
 }
@@ -36,30 +45,27 @@ export function moveLeft(grid: Grid): { grid: Grid; score: number; changed: bool
   let score = 0;
   let changed = false;
   const newGrid = grid.map(row => {
-    // Filter out nulls
-    let newRow = row.filter(cell => cell !== null);
+    let newRow = row.filter(cell => cell !== null) as TileObject[];
     
-    // Merge
     for (let i = 0; i < newRow.length - 1; i++) {
-      if (newRow[i] === newRow[i + 1]) {
-        newRow[i] = (newRow[i] as number) * 2;
-        score += newRow[i] as number;
+      if (newRow[i].value === newRow[i + 1].value) {
+        newRow[i] = { ...newRow[i], value: newRow[i].value * 2 };
+        score += newRow[i].value;
         newRow.splice(i + 1, 1);
         changed = true;
       }
     }
     
-    // Fill with nulls
-    while (newRow.length < GRID_SIZE) {
-      newRow.push(null);
+    const finalRow: (TileObject | null)[] = [...newRow];
+    while (finalRow.length < GRID_SIZE) {
+      finalRow.push(null);
     }
     
-    // Check if row changed
-    if (JSON.stringify(newRow) !== JSON.stringify(row)) {
+    if (JSON.stringify(finalRow.map(c => c?.value)) !== JSON.stringify(row.map(c => c?.value))) {
       changed = true;
     }
     
-    return newRow;
+    return finalRow;
   });
 
   return { grid: newGrid, score, changed };
@@ -109,11 +115,13 @@ export function isGameOver(grid: Grid): boolean {
   // Check for possible merges
   for (let r = 0; r < GRID_SIZE; r++) {
     for (let c = 0; c < GRID_SIZE; c++) {
-      const val = grid[r][c];
+      const tile = grid[r][c];
+      if (!tile) continue;
+      
       // Check right
-      if (c < GRID_SIZE - 1 && grid[r][c + 1] === val) return false;
+      if (c < GRID_SIZE - 1 && grid[r][c + 1]?.value === tile.value) return false;
       // Check down
-      if (r < GRID_SIZE - 1 && grid[r + 1][c] === val) return false;
+      if (r < GRID_SIZE - 1 && grid[r + 1][c]?.value === tile.value) return false;
     }
   }
 
