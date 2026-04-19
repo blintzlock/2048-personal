@@ -11,7 +11,6 @@ interface TileProps {
   value: number;
   row: number;
   col: number;
-  key?: string | number;
 }
 
 export function Tile({ value, row, col }: TileProps) {
@@ -19,19 +18,30 @@ export function Tile({ value, row, col }: TileProps) {
     <motion.div
       layout
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      animate={{ 
+        scale: 1, 
+        opacity: 1,
+        top: `${row * 25}%`,
+        left: `${col * 25}%`
+      }}
       exit={{ scale: 0, opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      style={{
-        gridRowStart: row + 1,
-        gridColumnStart: col + 1,
+      transition={{ 
+        type: 'spring', 
+        stiffness: 400, 
+        damping: 30,
+        layout: { duration: 0.1 }
       }}
       className={twMerge(
-        'absolute inset-0 flex items-center justify-center rounded-lg font-extrabold text-3xl z-10 select-none',
-        `tile-${value > 2048 ? 2048 : value}`
+        'absolute p-2 w-1/4 h-1/4 z-10 select-none'
       )}
     >
-      {value}
+      <div className={twMerge(
+        'w-full h-full flex items-center justify-center rounded-lg font-black shadow-sm transition-colors duration-200',
+        value < 100 ? 'text-3xl' : value < 1000 ? 'text-2xl' : 'text-xl',
+        `tile-${value > 2048 ? 2048 : value}`
+      )}>
+        {value}
+      </div>
     </motion.div>
   );
 }
