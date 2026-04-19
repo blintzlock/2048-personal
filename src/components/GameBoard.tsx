@@ -13,20 +13,26 @@ interface GameBoardProps {
 
 export function GameBoard({ grid }: GameBoardProps) {
   return (
-    <div className="relative aspect-square w-full max-w-[500px] bg-container-bg p-4 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 grid grid-cols-4 grid-rows-4 gap-3">
+    <div className="relative aspect-square w-full max-w-[500px] bg-container-bg p-2 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5">
       {/* Background cells */}
-      {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, i) => (
-        <div key={i} className="bg-tile-empty rounded-lg" />
-      ))}
+      <div className="absolute inset-0 p-2 grid grid-cols-4 grid-rows-4 gap-0">
+        {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, i) => (
+          <div key={i} className="p-2 w-full h-full">
+            <div className="bg-tile-empty w-full h-full rounded-lg" />
+          </div>
+        ))}
+      </div>
 
       {/* Active tiles */}
-      <AnimatePresence>
-        {grid.map((row, r) =>
-          row.map((value, c) => value !== null && (
-            <Tile key={`${r}-${c}-${value}`} value={value} row={r} col={c} />
-          ))
-        )}
-      </AnimatePresence>
+      <div className="absolute inset-0 p-2">
+        <AnimatePresence>
+          {grid.map((row, r) =>
+            row.map((tile, c) => tile !== null && (
+              <Tile key={tile.id} value={tile.value} row={r} col={c} />
+            ))
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
