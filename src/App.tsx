@@ -53,8 +53,8 @@ function GameContent() {
       </header>
 
       {/* Main Game Area */}
-      <main className="relative w-full flex flex-col items-center gap-8">
-        <div className="relative">
+      <main className="relative w-full flex flex-col items-center gap-8 px-4">
+        <div className="relative w-full max-w-[500px]">
           <GameBoard grid={grid} />
           
           <AnimatePresence>
